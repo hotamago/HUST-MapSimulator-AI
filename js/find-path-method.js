@@ -40,21 +40,16 @@ class HistoryFP {
 }
 
 class FindPathMeathod {
-  constructor(nodes, funcCalDist, funcCondition = null, name = "Unknow") {
+  constructor(nodes, funcCondition = null, name = "Unknow") {
     this.nodes = nodes;
     // Check vaild nodes
     for (let i = 0; i < nodes.length; i++) {
       this.checkVaildNode(nodes[i]);
     }
-    this.funcCalDist = funcCalDist;
     if (funcCondition == null) {
       this.funcCondition = defaultfuncCondition;
     } else {
       this.funcCondition = funcCondition;
-    }
-    // Check if funcCalDist is function
-    if (typeof funcCalDist != "function") {
-      throw new Error("funcCalDist must be function");
     }
     this.name = name;
   }
@@ -72,14 +67,11 @@ class FindPathMeathod {
 class CustomFindPathMeathod extends FindPathMeathod {
   constructor(
     nodes,
-    funcCalDist,
     funcCondition = null,
-    funcUpdateDp = null,
     funcCalPriority = null,
     name = "CustomFindPathMeathod"
   ) {
-    super(nodes, funcCalDist, funcCondition, name);
-    this.funcUpdateDp = funcUpdateDp;
+    super(nodes, funcCondition, name);
     this.funcCalPriority = funcCalPriority;
   }
   findPath(st, ed) {
@@ -116,21 +108,11 @@ class CustomFindPathMeathod extends FindPathMeathod {
           continue;
         }
         let v = this.nodes[u].paths[i].node;
-        let alt = this.funcCalDist(
-          this.nodes[u],
-          this.nodes[v],
-          this.nodes[st],
-          this.nodes[ed],
-          dp[u]
-        );
+        let alt =
+          calRealDistance(this.nodes[u].data.pos, this.nodes[v].data.pos) +
+          dp[u];
         if (dp[v] > alt) {
-          dp[v] = this.funcUpdateDp(
-            this.nodes[u],
-            this.nodes[v],
-            this.nodes[st],
-            this.nodes[ed],
-            dp[u]
-          );
+          dp[v] = alt;
           prev[v] = u;
           pq.add(
             new QElement(
@@ -166,15 +148,9 @@ class Dijkstra extends CustomFindPathMeathod {
   constructor(nodes, funcCondition = null) {
     super(
       nodes,
-      function (u, v, st, ed, dp) {
-        return getDistance(u.data.pos, v.data.pos) + dp;
-      },
       funcCondition,
       function (u, v, st, ed, dp) {
-        return getDistance(u.data.pos, v.data.pos) + dp;
-      },
-      function (u, v, st, ed, dp) {
-        return getDistance(u.data.pos, v.data.pos) + dp;
+        return calRealDistance(u.data.pos, v.data.pos) + dp;
       },
       "Dijkstra"
     );
@@ -185,17 +161,11 @@ class AStar extends CustomFindPathMeathod {
   constructor(nodes, funcCondition = null) {
     super(
       nodes,
-      function (u, v, st, ed, dp) {
-        return getDistance(u.data.pos, v.data.pos) + dp;
-      },
       funcCondition,
       function (u, v, st, ed, dp) {
-        return getDistance(u.data.pos, v.data.pos) + dp;
-      },
-      function (u, v, st, ed, dp) {
         return (
-          getDistance(v.data.pos, ed.data.pos) +
-          getDistance(u.data.pos, v.data.pos) +
+          calRealDistance(v.data.pos, ed.data.pos) +
+          calRealDistance(u.data.pos, v.data.pos) +
           dp
         );
       },
@@ -208,13 +178,7 @@ class Stupid extends CustomFindPathMeathod {
   constructor(nodes, funcCondition = null) {
     super(
       nodes,
-      function (u, v, st, ed, dp) {
-        return getDistance(u.data.pos, v.data.pos) + dp;
-      },
       funcCondition,
-      function (u, v, st, ed, dp) {
-        return getDistance(u.data.pos, v.data.pos) + dp;
-      },
       function (u, v, st, ed, dp) {
         return Math.random();
       },
@@ -227,17 +191,27 @@ class Greedy extends CustomFindPathMeathod {
   constructor(nodes, funcCondition = null) {
     super(
       nodes,
-      function (u, v, st, ed, dp) {
-        return getDistance(u.data.pos, v.data.pos) + dp;
-      },
       funcCondition,
       function (u, v, st, ed, dp) {
-        return getDistance(u.data.pos, v.data.pos) + dp;
-      },
-      function (u, v, st, ed, dp) {
-        return getDistance(v.data.pos, ed.data.pos);
+        return calRealDistance(v.data.pos, ed.data.pos);
       },
       "Greedy"
+    );
+  }
+}
+
+class AStarHota extends CustomFindPathMeathod {
+  constructor(nodes, funcCondition = null) {
+    super(
+      nodes,
+      funcCondition,
+      function (u, v, st, ed, dp) {
+        let temp = calRealDistance(v.data.pos, ed.data.pos);
+        return temp > calRealDistance(st.data.pos, ed.data.pos) * 0.3
+          ? (temp + calRealDistance(u.data.pos, v.data.pos) + dp) * 1.0
+          : temp + (calRealDistance(u.data.pos, v.data.pos) + dp) * 0.65;
+      },
+      "AStarHota"
     );
   }
 }

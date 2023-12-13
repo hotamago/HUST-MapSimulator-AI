@@ -61,28 +61,6 @@ function autoReRender(obj, layer) {
   }
 }
 
-// Calculate distance between 2 coordinate
-function calRealDistance(origin, destination) {
-  // return distance in meters
-  var lon1 = toRadian(origin[1]),
-    lat1 = toRadian(origin[0]),
-    lon2 = toRadian(destination[1]),
-    lat2 = toRadian(destination[0]);
-
-  var deltaLat = lat2 - lat1;
-  var deltaLon = lon2 - lon1;
-
-  var a =
-    Math.pow(Math.sin(deltaLat / 2), 2) +
-    Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(deltaLon / 2), 2);
-  var c = 2 * Math.asin(Math.sqrt(a));
-  var EARTH_RADIUS = 6371;
-  return c * EARTH_RADIUS * 1000;
-}
-function toRadian(degree) {
-  return (degree * Math.PI) / 180;
-}
-
 // Meathod path condition
 let meathodPathCondition = {
   motorcar: function (path) {
@@ -148,6 +126,7 @@ let mapState = {
     AStar: null,
     Stupid: null,
     Greedy: null,
+    AStarHota: null,
   },
   curNameMeathodFindPath: "Dijkstra",
   curShowHistoryPath: false,
@@ -298,6 +277,11 @@ window.addEventListener("load", function () {
   mapState.findPathMethod["AStar"] = new AStar(mapState.listNodeRoute, null);
   mapState.findPathMethod["Stupid"] = new Stupid(mapState.listNodeRoute, null);
   mapState.findPathMethod["Greedy"] = new Greedy(mapState.listNodeRoute, null);
+  mapState.findPathMethod["AStarHota"] = new AStarHota(
+    mapState.listNodeRoute,
+    null
+  );
+
   mapState.curVehicle = docEle["select-vehicle"].value;
   for (let key in mapState.findPathMethod) {
     mapState.findPathMethod[key].funcCondition =
@@ -527,6 +511,10 @@ window.addEventListener("load", function () {
   // Select meathod find path
   docEle["select-meathod-find-path"].addEventListener("change", function () {
     mapState.curNameMeathodFindPath = docEle["select-meathod-find-path"].value;
+    // Check if have start and end node
+    if (mapState.stnode.orgNode != null && mapState.endnode.orgNode != null) {
+      findPathNow();
+    }
   });
 
   // Select vehicle
@@ -535,6 +523,10 @@ window.addEventListener("load", function () {
     for (let key in mapState.findPathMethod) {
       mapState.findPathMethod[key].funcCondition =
         meathodPathCondition[mapState.curVehicle];
+    }
+    // Check if have start and end node
+    if (mapState.stnode.orgNode != null && mapState.endnode.orgNode != null) {
+      findPathNow();
     }
   });
 
@@ -548,6 +540,9 @@ window.addEventListener("load", function () {
         mapState.autoInterval.start();
       } else {
         mapState.autoInterval.stop();
+        // Remove history path
+        mapState.historyRoute.forEach((ele) => ele.remove());
+        mapState.historyRoute = [];
       }
     }
   );

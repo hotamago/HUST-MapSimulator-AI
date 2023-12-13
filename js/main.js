@@ -75,6 +75,9 @@ let meathodPathCondition = {
     }
     return true;
   },
+  walk: function (path) {
+    return true;
+  },
   aerodyne: function (path) {
     return true;
   },

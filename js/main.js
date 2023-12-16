@@ -469,13 +469,13 @@ window.addEventListener("load", function () {
       return;
     }
 
-    if (path.length >= 2) {
-      // Preprocess path start and path end
-      let listPosNode = [];
-      for (let i = 0; i < path.length; i++) {
-        listPosNode.push(nodeToLngLat(mapIDNode.get(path[i])));
-      }
+    // Preprocess path start and path end
+    let listPosNode = [];
+    for (let i = 0; i < path.length; i++) {
+      listPosNode.push(nodeToLngLat(mapIDNode.get(path[i])));
+    }
 
+    if (path.length >= 2) {
       let fixedNodeSt = getNearestPoint2Point(
         arr2vector(listPosNode[0]),
         arr2vector(listPosNode[1]),
@@ -488,12 +488,12 @@ window.addEventListener("load", function () {
       ).toArray();
       listPosNode[0] = fixedNodeSt;
       listPosNode[listPosNode.length - 1] = fixedNodeEd;
-
-      autoReRender(
-        mapState.routePath,
-        new RouterNode(map, listPosNode, "blue", 5, 0.8)
-      );
     }
+
+    autoReRender(
+      mapState.routePath,
+      new RouterNode(map, listPosNode, "blue", 5, 0.8)
+    );
 
     // Add path from org to fix
     autoReRender(

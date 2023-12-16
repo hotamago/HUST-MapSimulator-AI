@@ -52,9 +52,10 @@ class PolygonGround extends RenderObject {
     this._setLayerObject([
       L.polygon(listNode, {
         color: "red",
-        fill: true,
-        weight: 0.5,
-        opacity: 0.1,
+        fill: false,
+        weight: 2,
+        opacity: 1,
+        dashArray: "5, 5",
       }),
     ]);
   }

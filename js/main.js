@@ -153,9 +153,15 @@ window.addEventListener("load", function () {
   // Init map
   map = L.map("map", {
     attributionControl: false,
-    center: [21.0395, 105.84106],
-    zoom: 17,
+    center: [21.0395, 105.83806],
+    zoom: 16,
+    maxNativeZoom: 20,
   });
+
+  //add zoom control with your options
+  L.control.zoom({
+    position:'topright'
+  }).addTo(map);
 
   // add tile để map có thể hoạt động, xài free từ OSM
   L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {

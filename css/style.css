@@ -15,27 +15,37 @@ body {
 }
 
 #info {
-    z-index: 1000;
-    display: block;
-    position: relative;
-    margin: 0px auto;
-    width: 50%;
-    padding: 10px;
-    border: none;
-    border-radius: 3px;
-    font-size: 12px;
-    text-align: center;
-    color: #222;
-    background: #fff;
+    font-size: 0.7rem;
 }
 #feature {
     z-index: 1000;
     display: block;
     position: fixed;
     background: white;
-    width: 8em;
-    height: 30em;
-    left: 8px;
-    bottom: 4em;
-    border-radius: 6px;
+    padding: 0.8rem;
+    width: 20rem;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.lst-vehicle button {
+    max-width: 3.5rem;
+}
+
+.lst-point button {
+    max-width: 9rem;
+}
+
+.lst-vehicle button .active {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+#select-vehicle {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
 }

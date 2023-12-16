@@ -166,9 +166,11 @@ window.addEventListener("load", function () {
   });
 
   //add zoom control with your options
-  L.control.zoom({
-    position:'topright'
-  }).addTo(map);
+  L.control
+    .zoom({
+      position: "topright",
+    })
+    .addTo(map);
 
   // add tile để map có thể hoạt động, xài free từ OSM
   L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {

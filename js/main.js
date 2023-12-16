@@ -142,6 +142,13 @@ let mapIDNode = new Map();
 
 let autoIDMapper = new AutoMapID();
 
+// let kdTree = {
+//   motorcar: null,
+//   motorcycle: null,
+//   walk: null,
+//   aerodyne: null,
+// };
+
 let kdTree = null;
 
 window.addEventListener("load", function () {
@@ -210,6 +217,7 @@ window.addEventListener("load", function () {
   // Add all PointNode
   for (let i = 0; i < mapState.nodeFiltered.length; i++) {
     let ele = mapState.nodeFiltered[i];
+    if (!pointInPolygon(nodeToLngLat(ele), polygonLimitLine.listNode)) continue;
     renderObjects.push(new PointNode(map, nodeToLngLat(ele)));
   }
 
@@ -219,29 +227,52 @@ window.addEventListener("load", function () {
     let listPosNode = [];
     for (let j = 0; j < ele.nodes.length; j++) {
       let node = mapIDNode.get(ele.nodes[j]);
+      if (!pointInPolygon(nodeToLngLat(node), polygonLimitLine.listNode))
+        continue;
       listPosNode.push(nodeToLngLat(node));
     }
     renderObjects.push(new RouterNode(map, listPosNode));
   }
 
-  // Convert node to KDTree node input
-  let listNodeTemp = [];
+  // Normazlie id node
   for (let i = 0; i < mapState.nodeFiltered.length; i++) {
     let ele = mapState.nodeFiltered[i];
-    if (ele.type == "node") {
-      mapState.listNodeID.push(ele.id);
-      listNodeTemp.push(new NodeKDTreeInput(nodeToLngLat(ele), ele.id));
-      autoIDMapper.add(ele.id, i);
-    }
+    autoIDMapper.add(ele.id, i);
   }
 
-  // Init stuct
-  kdTree = new KDTree(listNodeTemp, function (node1, node2) {
+  // Convert node to KDTree node input
+  function autoConvertNodeToKDTreeInput(fnc_filter) {
+    let listNodeTemp = [];
+    for (let i = 0; i < mapState.nodeFiltered.length; i++) {
+      let ele = mapState.nodeFiltered[i];
+      if (
+        fnc_filter({
+          ...ele.tags,
+        })
+      ) {
+        listNodeTemp.push(new NodeKDTreeInput(nodeToLngLat(ele), ele.id));
+      }
+    }
+    return listNodeTemp;
+  }
+  function cmpKDTreeNode(node1, node2) {
     // console.log(node1, node2);
     return Math.sqrt(
       Math.pow(node1[0] - node2[0], 2) + Math.pow(node1[1] - node2[1], 2)
     );
-  });
+  }
+
+  // Init stuct
+  // for (let key in kdTree) {
+  //   kdTree[key] = new KDTree(
+  //     autoConvertNodeToKDTreeInput(meathodPathCondition[key]),
+  //     cmpKDTreeNode
+  //   );
+  // }
+  kdTree = new KDTree(
+    autoConvertNodeToKDTreeInput((path) => true),
+    cmpKDTreeNode
+  );
 
   // Convert way to node route
   for (let i = 0; i < mapState.nodeFiltered.length; i++) {
@@ -403,34 +434,18 @@ window.addEventListener("load", function () {
     }
 
     // Find nearest node
+    // mapState.stnode.fixNode = kdTree[mapState.curVehicle].nns(
+    //   mapState.stnode.orgNode.pos
+    // ).data;
+    // mapState.endnode.fixNode = kdTree[mapState.curVehicle].nns(
+    //   mapState.endnode.orgNode.pos
+    // ).data;
     mapState.stnode.fixNode = kdTree.nns(mapState.stnode.orgNode.pos).data;
     mapState.endnode.fixNode = kdTree.nns(mapState.endnode.orgNode.pos).data;
 
     // Short name
     let st = mapState.stnode.fixNode;
     let ed = mapState.endnode.fixNode;
-
-    // Add path from org to fix
-    autoReRender(
-      mapState.stnode.shortRoute,
-      new RouterNode(
-        map,
-        [mapState.stnode.orgNode.pos, nodeToLngLat(mapIDNode.get(st))],
-        "red",
-        3,
-        0.8
-      )
-    );
-    autoReRender(
-      mapState.endnode.shortRoute,
-      new RouterNode(
-        map,
-        [mapState.endnode.orgNode.pos, nodeToLngLat(mapIDNode.get(ed))],
-        "red",
-        3,
-        0.8
-      )
-    );
 
     // Find path
     let rawRes = mapState.findPathMethod[
@@ -449,14 +464,55 @@ window.addEventListener("load", function () {
       curIndex: 0,
     });
 
-    // Add path
+    if (path.length <= 2) {
+      alert("Can't find path");
+      return;
+    }
+
+    // Preprocess path start and path end
     let listPosNode = [];
     for (let i = 0; i < path.length; i++) {
       listPosNode.push(nodeToLngLat(mapIDNode.get(path[i])));
     }
+
+    let fixedNodeSt = getNearestPoint2Point(
+      arr2vector(listPosNode[0]),
+      arr2vector(listPosNode[1]),
+      arr2vector(mapState.stnode.orgNode.pos)
+    ).toArray();
+    let fixedNodeEd = getNearestPoint2Point(
+      arr2vector(listPosNode[listPosNode.length - 2]),
+      arr2vector(listPosNode[listPosNode.length - 1]),
+      arr2vector(mapState.endnode.orgNode.pos)
+    ).toArray();
+    listPosNode[0] = fixedNodeSt;
+    listPosNode[listPosNode.length - 1] = fixedNodeEd;
+
     autoReRender(
       mapState.routePath,
       new RouterNode(map, listPosNode, "blue", 5, 0.8)
+    );
+
+    // Add path from org to fix
+    autoReRender(
+      mapState.stnode.shortRoute,
+      new RouterNode(
+        map,
+        [mapState.stnode.orgNode.pos, listPosNode[0]],
+        "red",
+        3,
+        0.8
+      )
+    );
+    autoReRender(
+      mapState.endnode.shortRoute,
+      new RouterNode(
+        map,
+        [mapState.endnode.orgNode.pos, listPosNode[listPosNode.length - 1]],
+        "red",
+        3,
+        0.8
+      )
     );
 
     // Show number of nodes in path

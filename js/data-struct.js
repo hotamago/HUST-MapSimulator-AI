@@ -14,7 +14,7 @@ class NodeKDTreeInput {
 }
 class KDTree {
   constructor(points, distance, numdim = 2) {
-    this.points = points;
+    // this.points = points;
     // Check if points is array and element is NodeKDTreeInput
     if (!Array.isArray(points)) {
       throw new Error("Points must be array");

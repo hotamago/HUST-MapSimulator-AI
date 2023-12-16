@@ -92,7 +92,18 @@ class Vector2 {
     let length2 = Vector2.length(vector2);
     return Math.acos(dot / (length1 * length2));
   }
+  // Common
+  toString() {
+    return "(" + this.x + ", " + this.y + ")";
+  }
+  toArray() {
+    return [this.x, this.y];
+  }
 }
+
+arr2vector = (arr) => {
+  return new Vector2(arr[0], arr[1]);
+};
 
 function pointInPolygon(point, polygon) {
   const x = point[0];
@@ -135,4 +146,32 @@ function calRealDistance(origin, destination) {
 
 function toRadian(degree) {
   return (degree * Math.PI) / 180;
+}
+
+// Get nearest point in line to a point
+function getNearestPoint2Point(p1, p2, vectorPos) {
+  let vector1 = Vector2.sub(p1, vectorPos);
+  let vector2 = Vector2.sub(p2, vectorPos);
+  let vector3 = Vector2.sub(p1, p2);
+  let agnle1 = Vector2.angleBetween(vector1, Vector2.sub(p1, p2));
+  let agnle2 = Vector2.angleBetween(vector2, Vector2.sub(p2, p1));
+  if (agnle1 <= Math.PI / 2 && agnle2 <= Math.PI / 2) {
+    let p = (vector3.length() + vector1.length() + vector2.length()) / 2;
+    let h =
+      (2 / vector3.length()) *
+      Math.sqrt(
+        p *
+          (p - vector3.length()) *
+          (p - vector1.length()) *
+          (p - vector2.length())
+      );
+    let vector4 = Vector2.sub(p1, p2);
+    let vector5 = vector4.normalize().mulScalar(h);
+    let vector6 = Vector2.add(vectorPos, vector5);
+    return vector6;
+  }
+  if (vector1.length() < vector2.length()) {
+    return p1;
+  }
+  return p2;
 }

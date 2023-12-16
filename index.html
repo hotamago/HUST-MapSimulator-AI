@@ -24,16 +24,29 @@
 
 <body>
     <div id="map"></div>
-    <pre id="info"></pre>
+    <!-- <pre id="info"></pre> -->
     <div id="feature">
-        <div class="row">
-            <div class="col-6">
-                <button id="btn-start" class="btn-sm btn-primary">ST Node</button>
-            </div>
-            <div class="col-6">
-                <button id="btn-end" class="btn-sm btn-primary">EN Node</button>
-            </div>
+        <div class="row d-flex justify-content-around lst-vehicle text-center">
+            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('walk', this)"><i class="fa-solid fa-person-walking"></i></button>
+            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('motorcycle', this)"><i class="fa-solid fa-bicycle"></i></button>
+            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('motorcycle', this)"><i class="fa-solid fa-motorcycle"></i></button>
+            <button type="button" class="btn btn-outline-primary active" onclick="selectVehicle('motorcar', this)"><i class="fa-solid fa-car"></i></button>
+            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('aerodyne', this)"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
+
+        <div class="row d-flex justify-content-around lst-point text-center pt-3">
+            <button id="btn-start" class="btn-sm btn-primary"><i class="fa-solid fa-location-dot"></i> Start
+                point</button>
+            <button id="btn-end" class="btn-sm btn-danger"><i class="fa-solid fa-location-dot"></i> End point</button>
+        </div>
+
+        <div class="mt-3">
+            Total length:
+            <span class="badge bg-secondary" id="display-total-length-of-path">0</span> m
+        </div>
+        <hr />
+        <h5 class="mt-2 text-center">Developer mode</h5>
+        <h6 class="pt-2">Data Path & Node</h6>
         <div class="form-check form-switch mt-1">
             <input class="form-check-input" type="checkbox" id="btn-toggle-show-path">
             <label class="form-check-label">
@@ -46,47 +59,64 @@
                 Show node
             </label>
         </div>
+        <h6 class="pt-2">Algorithm</h6>
         <select class="form-select mt-1" id="select-meathod-find-path">
             <option value="Dijkstra">Dijkstra</option>
             <option value="AStar">AStar</option>
-            <option value="Stupid">Stupid</option>
+            <option value="Stupid">Random</option>
             <option value="Greedy">Greedy</option>
-            <option value="AStarHota">AStarHota</option>
+            <option value="AStarHota">AStar-Plus</option>
         </select>
         <div class="mt-1">
-            Num nodes path:
+            Number paths searched:
             <span class="badge bg-secondary" id="display-number-of-nodes-in-path">0</span>
         </div>
         <div class="mt-1">
-            Nodes searched:
+            Number nodes searched:
             <span class="badge bg-secondary" id="display-number-of-nodes-searched">0</span>
         </div>
-        <div class="mt-1">
-            Total length:
-            <span class="badge bg-secondary" id="display-total-length-of-path">0</span> m
-        </div>
-        <select class="form-select mt-1" id="select-vehicle">
-            <option value="motorcar" selected>Motorcar</option>
-            <option value="motorcycle">Motorcycle</option>
-            <option value="walk">Walk</option>
-            <option value="aerodyne">Aerodyne cyberpunk 2077</option>
-        </select>
 
+        <h6 class="pt-2">Simulation</h6>
         <div class="form-check form-switch mt-1">
             <input class="form-check-input" type="checkbox" id="btn-toggle-show-history-path">
             <label class="form-check-label">
                 Show history
             </label>
         </div>
-        <select class="form-select mt-1" id="select-delay-replay-history-path">
-            <option value="0" selected>0ms</option>
-            <option value="50">50ms</option>
-            <option value="100">100ms</option>
-            <option value="500">500ms</option>
-            <option value="1000">1s</option>
-            <option value="5000">5s</option>
+
+        <div class="mb-3 row">
+            <label for="staticEmail" class="col-sm-3 col-form-label">Delay: </label>
+            <div class="col-sm-9">
+                <select class="form-select mt-1" id="select-delay-replay-history-path">
+                    <option value="0" selected>0ms</option>
+                    <option value="50">50ms</option>
+                    <option value="100">100ms</option>
+                    <option value="500">500ms</option>
+                    <option value="1000">1s</option>
+                    <option value="5000">5s</option>
+                </select>
+            </div>
+        </div>
+
+        <h6 class="pt-2">Coordinates</h6>
+        <div id="info"></div>
+        <select class="form-select mt-1" id="select-vehicle">
+            <option value="motorcar" selected>Motorcar</option>
+            <option value="motorcycle">Motorcycle</option>
+            <option value="walk">Walk</option>
+            <option value="aerodyne">Aerodyne cyberpunk 2077</option>
         </select>
     </div>
 </body>
+<script src="https://kit.fontawesome.com/28d97910b7.js" crossorigin="anonymous"></script>
+<script>
+    function selectVehicle(value, button) {
+        document.querySelectorAll('.lst-vehicle .btn').forEach(function (btn) {
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+        document.getElementById('select-vehicle').value = value;
+    }
+</script>
 
 </html>

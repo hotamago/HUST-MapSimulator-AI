@@ -165,9 +165,11 @@ window.addEventListener("load", function () {
   });
 
   //add zoom control with your options
-  L.control.zoom({
-    position:'topright'
-  }).addTo(map);
+  L.control
+    .zoom({
+      position: "topright",
+    })
+    .addTo(map);
 
   // add tile để map có thể hoạt động, xài free từ OSM
   L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
@@ -471,7 +473,7 @@ window.addEventListener("load", function () {
       curIndex: 0,
     });
 
-    if (path.length <= 2) {
+    if (path.length == 0) {
       alert("Can't find path");
       return;
     }
@@ -482,18 +484,20 @@ window.addEventListener("load", function () {
       listPosNode.push(nodeToLngLat(mapIDNode.get(path[i])));
     }
 
-    let fixedNodeSt = getNearestPoint2Point(
-      arr2vector(listPosNode[0]),
-      arr2vector(listPosNode[1]),
-      arr2vector(mapState.stnode.orgNode.pos)
-    ).toArray();
-    let fixedNodeEd = getNearestPoint2Point(
-      arr2vector(listPosNode[listPosNode.length - 2]),
-      arr2vector(listPosNode[listPosNode.length - 1]),
-      arr2vector(mapState.endnode.orgNode.pos)
-    ).toArray();
-    listPosNode[0] = fixedNodeSt;
-    listPosNode[listPosNode.length - 1] = fixedNodeEd;
+    if (path.length >= 2) {
+      let fixedNodeSt = getNearestPoint2Point(
+        arr2vector(listPosNode[0]),
+        arr2vector(listPosNode[1]),
+        arr2vector(mapState.stnode.orgNode.pos)
+      ).toArray();
+      let fixedNodeEd = getNearestPoint2Point(
+        arr2vector(listPosNode[listPosNode.length - 2]),
+        arr2vector(listPosNode[listPosNode.length - 1]),
+        arr2vector(mapState.endnode.orgNode.pos)
+      ).toArray();
+      listPosNode[0] = fixedNodeSt;
+      listPosNode[listPosNode.length - 1] = fixedNodeEd;
+    }
 
     autoReRender(
       mapState.routePath,

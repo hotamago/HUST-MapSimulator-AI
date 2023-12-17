@@ -120,11 +120,10 @@
             btn.classList.remove('active');
         });
         button.classList.add('active');
-        //document.getElementById('select-vehicle').value = value;
-        docEle["select-vehicle"].value = value;
-        // Trigger the change event manually
-        const event = new Event('change');
-        docEle["select-vehicle"].dispatchEvent(event);
+        document.getElementById('select-vehicle').value = value;
+        var evt = document.createEvent("HTMLEvents");
+        evt.initEvent("change", false, true);
+        document.getElementById('select-vehicle').dispatchEvent(evt);
     }
 </script>
 

@@ -162,7 +162,6 @@ window.addEventListener("load", function () {
     attributionControl: false,
     center: [21.0395, 105.83806],
     zoom: 16,
-    maxNativeZoom: 20,
   });
 
   //add zoom control with your options
@@ -174,6 +173,8 @@ window.addEventListener("load", function () {
   L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
     attribution:
       '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      maxNativeZoom: 19,
+      maxZoom: 22,
   }).addTo(map);
 
   // L.circle([21.0395, 105.84106], { id: "test-point", radius: 10 }).addTo(map);

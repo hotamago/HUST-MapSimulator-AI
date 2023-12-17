@@ -27,11 +27,16 @@
     <!-- <pre id="info"></pre> -->
     <div id="feature">
         <div class="row d-flex justify-content-around lst-vehicle text-center">
-            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('walk', this)"><i class="fa-solid fa-person-walking"></i></button>
-            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('motorcycle', this)"><i class="fa-solid fa-bicycle"></i></button>
-            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('motorcycle', this)"><i class="fa-solid fa-motorcycle"></i></button>
-            <button type="button" class="btn btn-outline-primary active" onclick="selectVehicle('motorcar', this)"><i class="fa-solid fa-car"></i></button>
-            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('aerodyne', this)"><i class="fa-solid fa-paper-plane"></i></button>
+            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('walk', this)"><i
+                    class="fa-solid fa-person-walking"></i></button>
+            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('motorcycle', this)"><i
+                    class="fa-solid fa-bicycle"></i></button>
+            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('motorcycle', this)"><i
+                    class="fa-solid fa-motorcycle"></i></button>
+            <button type="button" class="btn btn-outline-primary active" onclick="selectVehicle('motorcar', this)"><i
+                    class="fa-solid fa-car"></i></button>
+            <button type="button" class="btn btn-outline-primary" onclick="selectVehicle('aerodyne', this)"><i
+                    class="fa-solid fa-paper-plane"></i></button>
         </div>
 
         <div class="row d-flex justify-content-around lst-point text-center pt-3">
@@ -115,7 +120,11 @@
             btn.classList.remove('active');
         });
         button.classList.add('active');
-        document.getElementById('select-vehicle').value = value;
+        //document.getElementById('select-vehicle').value = value;
+        docEle["select-vehicle"].value = value;
+        // Trigger the change event manually
+        const event = new Event('change');
+        docEle["select-vehicle"].dispatchEvent(event);
     }
 </script>
 
